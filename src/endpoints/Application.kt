@@ -1,6 +1,7 @@
 package com.mkl
 
 import endpoints.PostPicture
+import endpoints.PostPlace
 import endpoints.PostUser
 import io.ktor.application.*
 import io.ktor.response.*
@@ -32,6 +33,27 @@ fun Application.module(testing: Boolean = false) {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
 
+        get("/search/{title}") {
+            val title :String? = call.parameters["title"]
+            var searchResults: List<Place>? = null
+            val placeResults: ArrayList<PostPlace> = ArrayList()
+            if(title == null) {
+                call.respond("no title was provided")
+            }
+            StartTransaction()
+            transaction {
+                searchResults = Place.find { Places.title eq title!! }.asSequence().toList()
+            }
+            if (searchResults == null) {
+                call.respond("no titles were found in db")
+            }
+
+            searchResults!!.forEach {
+                val tmpRes = PostPlace(it.lat, it.lon, it.title, it.desc, it.id.value)
+                placeResults.add(tmpRes)
+            }
+            call.respond(placeResults)
+        }
 
         post("/user") {
             val postUser = call.receive<PostUser>()
@@ -41,6 +63,11 @@ fun Application.module(testing: Boolean = false) {
         post("/picture") {
             val postPicture = call.receive<PostPicture>()
             call.respond(CreatePicture(postPicture))
+        }
+
+        post("/place") {
+            val postPlace = call.receive<PostPlace>()
+            call.respond(CreatePlace(postPlace))
         }
     }
 }
@@ -53,9 +80,25 @@ fun CreatePicture(postPicture: PostPicture): PostPicture {
 
         Pictures.insert {
             it[data] = postPicture.data
-        } get Pictures.id
+        } //get Pictures.id
     }
     return postPicture
+}
+
+fun CreatePlace(postPlace: PostPlace): PostPlace {
+    StartTransaction()
+    transaction {
+        addLogger(StdOutSqlLogger)
+        SchemaUtils.create( Places )
+
+        Places.insert {
+            it[lat] = postPlace.lat
+            it[lon] = postPlace.lat
+            it[title] = postPlace.title
+            it[description] = postPlace.desc
+        }
+    }
+    return postPlace
 }
 
 fun CreateUser(postUser: PostUser): PostUser {
@@ -66,7 +109,7 @@ fun CreateUser(postUser: PostUser): PostUser {
 
         val pictureTest = Users.insert {
             it[email] = postUser.email
-        } get Users.id
+        } //get Users.id
     }
     return postUser
 }
