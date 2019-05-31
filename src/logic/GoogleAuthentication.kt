@@ -16,12 +16,12 @@ class GoogleAuthentication {
         .setAudience(Collections.singletonList(CLIENT_ID))
         .build()
 
-    fun verify(token: String): AuthenticatedUser? {
+    fun verify(token: String): GoogleUser? {
 
         val result = verifier.verify(token) ?: return null
         val payload = result.payload
 
-        return AuthenticatedUser(
+        return GoogleUser(
             payload.subject,
             payload["name"] as String,
             payload.email,

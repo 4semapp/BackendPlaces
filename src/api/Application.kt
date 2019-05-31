@@ -7,14 +7,14 @@ import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
-import logic.createPlace
-import logic.search
+import logic.*
 
 
 fun main(args: Array<String>) {
@@ -31,6 +31,7 @@ fun Application.module() {
     }
 
     routing {
+
         get("/") {
             authenticate { call, user ->
                 call.respondText("Hello ${user.name}", contentType = ContentType.Text.Plain)
@@ -48,6 +49,21 @@ fun Application.module() {
             val out =
                 results.map { OutPlace(it.id.value, it.title, it.description, it.lat, it.lon, arrayOf()) }
             call.respond(out)
+        }
+
+        get("/authenticate/google/{token}") {
+            val service = GoogleAuthentication()
+            val token = getParameter("token")
+            val googleUser = service.verify(token!!)
+            if (googleUser == null) {
+                error("You could not be authenticated through google services.", HttpStatusCode.Unauthorized)
+            } else {
+                val found = findGoogleUser(googleUser.id)
+                if (found != null)
+                    call.respond(found)
+                else
+                    call.respond(createUser(googleUser))
+            }
         }
     }
 }

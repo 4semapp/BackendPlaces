@@ -38,6 +38,24 @@ class Place(id: EntityID<Int>) : IntEntity(id) {
     var lon by Places.lon
 }
 
+object Users : IntIdTable() {
+    val googleId: Column<String> = varchar("id", 255).uniqueIndex()
+    val name: Column<String> = varchar("name", 255)
+    val email: Column<String> = varchar("name", 255).uniqueIndex()
+    val picture: Column<String> = varchar("name", 255)
+    val locale: Column<String> = varchar("name", 5)
+}
+
+class User(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<User>(Users)
+
+    var googleId by Users.googleId
+    var name by Users.name
+    var email by Users.email
+    var picture by Users.picture
+    var locale by Users.locale
+}
+
 fun connect(): Database {
     val connection = Database.connect("jdbc:sqlite:places.sqlite", "org.sqlite.JDBC")
     TransactionManager.manager.defaultIsolationLevel =

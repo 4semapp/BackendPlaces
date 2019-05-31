@@ -5,13 +5,13 @@ import io.ktor.application.call
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.request.header
 import io.ktor.util.pipeline.PipelineContext
-import logic.AuthenticatedUser
+import logic.GoogleUser
 import logic.GoogleAuthentication
 
 val authenticator = GoogleAuthentication()
 const val prefix = "Bearer "
 
-suspend fun PipelineContext<Unit, ApplicationCall>.authenticate(onSuccess: suspend (call: ApplicationCall, user: AuthenticatedUser) -> Unit) {
+suspend fun PipelineContext<Unit, ApplicationCall>.authenticate(onSuccess: suspend (call: ApplicationCall, user: GoogleUser) -> Unit) {
 
     var token = call.request.header("Authorization")
     if (token == null) {
