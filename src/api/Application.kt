@@ -63,12 +63,12 @@ fun Application.module() {
                 val found = findGoogleUser(googleUser.id)
                 if (found != null) {
                     val token = sign(found)
-                    val response = AuthenticationResponse(token, found.toDTO())
+                    val response = createAuthResponse(token, found)
                     call.respond(response)
                 } else {
                     val created = createUser(googleUser)
                     val token = sign(created)
-                    val response = AuthenticationResponse(token, created.toDTO())
+                    val response = createAuthResponse(token, created)
                     call.respond(response)
                 }
             }
@@ -76,4 +76,24 @@ fun Application.module() {
     }
 }
 
-data class AuthenticationResponse(val token: String, val user: OutUser)
+data class AuthenticationResponse(
+    var id: Int,
+    var googleId: String,
+    var name: String,
+    var email: String,
+    var picture: String,
+    var locale: String,
+    var token: String
+)
+
+fun createAuthResponse(token: String, user: User): AuthenticationResponse {
+    return AuthenticationResponse(
+        user.id.value,
+        user.googleId,
+        user.name,
+        user.email,
+        user.picture,
+        user.locale,
+        token
+    )
+}
