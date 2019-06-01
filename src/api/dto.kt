@@ -97,15 +97,14 @@ data class OutPlace(
     }
 }
 
-fun Place.toDTO(pictures: Array<Picture>): OutPlace {
+fun Place.toDTO(): OutPlace {
     return OutPlace(
         id.value,
         title,
         description,
         lat,
-        lon,
-        pictures.map(Picture::toDTO).toTypedArray()
-    )
+        lon
+        )
 }
 
 data class OutUser(

@@ -39,6 +39,10 @@ fun Application.module() {
             }
         }
 
+        get("/places") {
+            call.respond()
+        }
+
         post("/places") {
             val posted = call.receive<InPlace>()
             call.respond(createPlace(posted).toDTO(arrayOf()))

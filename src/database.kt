@@ -11,8 +11,8 @@ import java.sql.Connection
 
 
 object Pictures : IntIdTable() {
-    val thumbData: Column<String> = text("thumbData")
-    val fullData: Column<String> = text("fullData")
+    val thumbData = text("thumbData")
+    val fullData = text("fullData")
 }
 
 class Picture(id: EntityID<Int>) : IntEntity(id) {
@@ -22,11 +22,17 @@ class Picture(id: EntityID<Int>) : IntEntity(id) {
     var fullData by Pictures.fullData
 }
 
+object PlacesPicturesReference : Table() {
+    val place = reference("place", Places).primaryKey(0)
+    val picture = reference("picture", Pictures).primaryKey(1)
+}
+
 object Places : IntIdTable() {
-    val title: Column<String> = varchar("title", 255)
-    val description: Column<String> = text("description")
-    val lat: Column<Float> = float("latitude")
-    val lon: Column<Float> = float("longitude")
+    val title = varchar("title", 255)
+    val description = text("description")
+    val lat = float("latitude")
+    val lon = float("longitude")
+    val user = reference("user", Users)
 }
 
 class Place(id: EntityID<Int>) : IntEntity(id) {
@@ -36,6 +42,8 @@ class Place(id: EntityID<Int>) : IntEntity(id) {
     var description by Places.description
     var lat by Places.lat
     var lon by Places.lon
+    var user by User referencedOn Places.user
+    var pictures by Picture via Pictures
 }
 
 object Users : IntIdTable() {

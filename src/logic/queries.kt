@@ -3,6 +3,7 @@ package logic
 import api.InPicture
 import api.InPlace
 import com.mkl.*
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun search(term: String): List<Place> {
@@ -39,13 +40,20 @@ fun createPicture(inPicture: InPicture): Picture {
     }
 }
 
-fun createPlace(inPlace: InPlace): Place {
+fun createPlace(author: User, inPlace: InPlace): Place {
+
     return transaction {
-        Place.new {
+
+        val createdPictures = inPlace.pictures.map { createPicture(it) }
+        val created = Place.new {
             title = inPlace.title
             description = inPlace.description
             lat = inPlace.lat
             lon = inPlace.lon
+            pictures = SizedCollection(createdPictures)
+            user = author
         }
+
+        created
     }
 }
