@@ -6,7 +6,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import java.util.*
 
 
-const val CLIENT_ID = "361668683148-d5dtbmrdtt5jnnnt4pirh2nod755c3q9.apps.googleusercontent.com"
+const val CLIENT_ID = "361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com"
 
 class GoogleAuthentication {
 
@@ -14,6 +14,7 @@ class GoogleAuthentication {
     private val httpTransport = NetHttpTransport.Builder().build()
     private val verifier = GoogleIdTokenVerifier.Builder(httpTransport, jacksonFactory)
         .setAudience(Collections.singletonList(CLIENT_ID))
+        .setIssuer("https://accounts.google.com")
         .build()
 
     fun verify(token: String): GoogleUser? {
@@ -22,7 +23,7 @@ class GoogleAuthentication {
         val payload = result.payload
 
         return GoogleUser(
-            payload.subject,
+            payload["sub"] as String,
             payload["name"] as String,
             payload.email,
             payload["picture"] as String,

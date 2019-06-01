@@ -39,11 +39,11 @@ class Place(id: EntityID<Int>) : IntEntity(id) {
 }
 
 object Users : IntIdTable() {
-    val googleId: Column<String> = varchar("id", 255).uniqueIndex()
+    val googleId: Column<String> = varchar("googleId", 255).uniqueIndex()
     val name: Column<String> = varchar("name", 255)
-    val email: Column<String> = varchar("name", 255).uniqueIndex()
-    val picture: Column<String> = varchar("name", 255)
-    val locale: Column<String> = varchar("name", 5)
+    val email: Column<String> = varchar("email", 255).uniqueIndex()
+    val picture: Column<String> = varchar("picture", 255)
+    val locale: Column<String> = varchar("locale", 5)
 }
 
 class User(id: EntityID<Int>) : IntEntity(id) {
@@ -69,5 +69,6 @@ fun main() {
         addLogger(StdOutSqlLogger)
         SchemaUtils.create(Places)
         SchemaUtils.create(Pictures)
+        SchemaUtils.create(Users)
     }
 }

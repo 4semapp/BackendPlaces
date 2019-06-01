@@ -2,6 +2,7 @@ package api
 
 import com.mkl.Picture
 import com.mkl.Place
+import com.mkl.User
 
 data class InPicture(
     var fullData: String,
@@ -104,5 +105,25 @@ fun Place.toDTO(pictures: Array<Picture>): OutPlace {
         lat,
         lon,
         pictures.map(Picture::toDTO).toTypedArray()
+    )
+}
+
+data class OutUser(
+    var id: Int,
+    var googleId: String,
+    var name: String,
+    var email: String,
+    var picture: String,
+    var locale: String
+)
+
+fun User.toDTO(): OutUser {
+    return OutUser(
+        this.id.value,
+        this.googleId,
+        this.name,
+        this.email,
+        this.picture,
+        this.locale
     )
 }

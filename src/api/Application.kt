@@ -1,6 +1,7 @@
 package com.mkl
 
 import api.*
+import com.mkl.api.sign
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -51,19 +52,28 @@ fun Application.module() {
             call.respond(out)
         }
 
-        get("/authenticate/google/{token}") {
+        post("/authenticate/google/{token}") {
+
             val service = GoogleAuthentication()
-            val token = getParameter("token")
-            val googleUser = service.verify(token!!)
+            val tokenHeader = getParameter("token")
+            val googleUser = service.verify(tokenHeader!!)
             if (googleUser == null) {
                 error("You could not be authenticated through google services.", HttpStatusCode.Unauthorized)
             } else {
                 val found = findGoogleUser(googleUser.id)
-                if (found != null)
-                    call.respond(found)
-                else
-                    call.respond(createUser(googleUser))
+                if (found != null) {
+                    val token = sign(found)
+                    val response = AuthenticationResponse(token, found.toDTO())
+                    call.respond(response)
+                } else {
+                    val created = createUser(googleUser)
+                    val token = sign(created)
+                    val response = AuthenticationResponse(token, created.toDTO())
+                    call.respond(response)
+                }
             }
         }
     }
 }
+
+data class AuthenticationResponse(val token: String, val user: OutUser)
