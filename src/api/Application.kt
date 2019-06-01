@@ -44,8 +44,8 @@ fun Application.module() {
             call.respond(createPlace(posted).toDTO(arrayOf()))
         }
 
-        get("/places/{title}") {
-            val title = getParameter("title")
+        get("/places/search/{term}") {
+            val title = getParameter("term")
             val results = search(title!!)
             val out =
                 results.map { OutPlace(it.id.value, it.title, it.description, it.lat, it.lon, arrayOf()) }
