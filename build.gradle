@@ -14,7 +14,7 @@ apply plugin: 'application'
 
 group 'backendPlaces003'
 version '0.0.1'
-mainClassName = "io.ktor.server.netty.EngineMain"
+mainClassName = "api.ApplicationKt"
 
 sourceSets {
     main.kotlin.srcDirs = main.java.srcDirs = ['src']
@@ -48,9 +48,4 @@ dependencies {
     runtime 'io.jsonwebtoken:jjwt-impl:0.10.5'
     runtime 'io.jsonwebtoken:jjwt-jackson:0.10.6'
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
-}
-
-task runServer(type: JavaExec) {
-    main = 'api.Server'
-    classpath = sourceSets.main.runtimeClasspath
 }

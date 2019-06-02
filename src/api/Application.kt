@@ -1,5 +1,3 @@
-// @file:JvmName("Server")
-
 package api
 
 import com.mkl.User
