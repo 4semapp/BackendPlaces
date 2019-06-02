@@ -11,15 +11,15 @@ data class InPicture(
 
 data class OutPicture(
     var id: Int,
-    var fullData: String?,
-    var thumbData: String?
+    var fullName: String,
+    var thumbName: String
 )
 
-fun Picture.toDTO(fullPictureData: Boolean = false): OutPicture {
+fun Picture.toDTO(): OutPicture {
     return OutPicture(
         id.value,
-        if (fullPictureData) fullData else null,
-        thumbData
+        fullName,
+        thumbName
     )
 }
 
@@ -93,14 +93,14 @@ data class OutPlace(
     }
 }
 
-fun Place.toDTO(fullPictureData: Boolean = false): OutPlace {
+fun Place.toDTO(): OutPlace {
     return OutPlace(
         id.value,
         title,
         description,
         latitude,
         longitude,
-        pictures.map { it.toDTO(fullPictureData) }.toTypedArray()
+        pictures.map { it.toDTO() }.toTypedArray()
     )
 }
 

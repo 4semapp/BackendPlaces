@@ -3,11 +3,18 @@ package logic
 import api.InPicture
 import api.InPlace
 import com.mkl.*
+import com.sun.org.apache.xml.internal.security.utils.Base64
 import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 
 fun getPlaces(): List<Place> {
     return transaction { Place.all().toList() }
+}
+
+fun getHomePage(): List<Place> {
+    return transaction { Places.selectAll().limit(3).map { Place.wrapRow(it) } }
 }
 
 fun search(term: String): List<Place> {
@@ -43,11 +50,20 @@ fun findGoogleUser(googleId: String): User? {
     }
 }
 
+private const val imageDir = "images"
+
 fun createPicture(inPicture: InPicture): Picture {
-    return Picture.new {
-        thumbData = inPicture.thumbData
-        fullData = inPicture.fullData
+    val picture = Picture.new {
+        fullName=""
+        thumbName=""
     }
+    val fullName = "${picture.id}_full.jpg"
+    val thumbName = "${picture.id}_thumb.jpg"
+    picture.fullName = fullName
+    picture.thumbName = thumbName
+    File(imageDir, fullName).writeBytes(Base64.decode(inPicture.fullData))
+    File(imageDir, thumbName).writeBytes(Base64.decode(inPicture.thumbData))
+    return picture
 }
 
 fun createPlace(author: User, inPlace: InPlace): Place {

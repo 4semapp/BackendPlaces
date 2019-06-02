@@ -11,15 +11,15 @@ import java.sql.Connection
 
 
 object Pictures : IntIdTable() {
-    val thumbData = text("thumbData")
-    val fullData = text("fullData")
+    val thumbName = text("thumbName")
+    val fullName = text("fullName")
 }
 
 class Picture(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Picture>(Pictures)
 
-    var thumbData by Pictures.thumbData
-    var fullData by Pictures.fullData
+    var thumbName by Pictures.thumbName
+    var fullName by Pictures.fullName
 }
 
 object PlacesPicturesReference : Table() {

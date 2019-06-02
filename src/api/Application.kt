@@ -9,6 +9,8 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.get
@@ -33,9 +35,19 @@ fun Application.module() {
 
     routing {
 
+        static("images") {
+            files("images")
+        }
+
         get("/places") {
-            authenticate { call, user ->
+            authenticate { call, _ ->
                 call.respond(getPlaces().map { transaction { it.toDTO() } })
+            }
+        }
+
+        get("/home") {
+            authenticate { call, _ ->
+                call.respond(getHomePage().map { transaction { it.toDTO() } })
             }
         }
 
@@ -43,14 +55,14 @@ fun Application.module() {
             authenticate { call, user ->
                 val posted = call.receive<InPlace>()
                 val place = transaction { createPlace(user, posted) }
-                call.respond(HttpStatusCode.Created, transaction { place.toDTO(false) })
+                call.respond(HttpStatusCode.Created, transaction { place.toDTO() })
             }
         }
 
         get("/places/search/{term}") {
             val title = getParameter("term")
             val results = search(title!!)
-            val out = results.map { transaction { it.toDTO(false) } }
+            val out = results.map { transaction { it.toDTO() } }
             call.respond(out)
         }
 
