@@ -1,7 +1,9 @@
-package com.mkl
+// @file:JvmName("Server")
 
-import api.*
-import com.mkl.api.sign
+package api
+
+import com.mkl.User
+import com.mkl.connect
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install

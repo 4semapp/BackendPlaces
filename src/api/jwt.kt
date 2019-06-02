@@ -1,4 +1,4 @@
-package com.mkl.api
+package api
 
 import com.google.api.client.util.Base64
 import com.mkl.User

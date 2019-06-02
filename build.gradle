@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+
 }
 
 apply plugin: 'kotlin'
@@ -43,9 +44,13 @@ dependencies {
     compile "io.ktor:ktor-client-core-jvm:$ktor_version"
     compile "io.ktor:ktor-client-apache:$ktor_version"
     compile 'com.google.api-client:google-api-client:1.24.1'
-    compile 'com.google.api-client:com.google.http-client:1.24.1'
     compile 'io.jsonwebtoken:jjwt-api:0.10.5'
     runtime 'io.jsonwebtoken:jjwt-impl:0.10.5'
     runtime 'io.jsonwebtoken:jjwt-jackson:0.10.6'
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
+}
+
+task runServer(type: JavaExec) {
+    main = 'api.Server'
+    classpath = sourceSets.main.runtimeClasspath
 }

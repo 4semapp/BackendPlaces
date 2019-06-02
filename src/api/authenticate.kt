@@ -1,7 +1,6 @@
 package api
 
 import com.mkl.User
-import com.mkl.api.verify
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
