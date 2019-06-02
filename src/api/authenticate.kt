@@ -1,17 +1,16 @@
 package api
 
+import com.mkl.User
+import com.mkl.api.verify
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.request.header
 import io.ktor.util.pipeline.PipelineContext
-import logic.GoogleUser
-import logic.GoogleAuthentication
 
-val authenticator = GoogleAuthentication()
 const val prefix = "Bearer "
 
-suspend fun PipelineContext<Unit, ApplicationCall>.authenticate(onSuccess: suspend (call: ApplicationCall, user: GoogleUser) -> Unit) {
+suspend fun PipelineContext<Unit, ApplicationCall>.authenticate(onSuccess: suspend (call: ApplicationCall, user: User) -> Unit) {
 
     var token = call.request.header("Authorization")
     if (token == null) {
@@ -19,9 +18,9 @@ suspend fun PipelineContext<Unit, ApplicationCall>.authenticate(onSuccess: suspe
         return
     }
 
-    val user = authenticator.verify(token.removePrefix(prefix))
+    val user = verify(token.removePrefix(prefix))
     if (user == null) {
-        error("The provided token is invalid.")
+        this.error("The provided token is invalid.", Unauthorized)
         return
     }
 

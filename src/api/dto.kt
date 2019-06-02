@@ -11,27 +11,23 @@ data class InPicture(
 
 data class OutPicture(
     var id: Int,
-    var fullData: String?, // nullable
-    var thumbData: String
+    var fullData: String?,
+    var thumbData: String?
 )
 
-fun Picture.toDTO(): OutPicture {
+fun Picture.toDTO(fullPictureData: Boolean = false): OutPicture {
     return OutPicture(
         id.value,
-        thumbData,
-        fullData
+        if (fullPictureData) fullData else null,
+        thumbData
     )
-}
-
-fun Iterable<Picture>.toDTO(): Array<OutPicture> {
-    return map(Picture::toDTO).toTypedArray()
 }
 
 data class InPlace(
     var title: String,
     var description: String,
-    var lat: Float,
-    var lon: Float,
+    var latitude: Float,
+    var longitude: Float,
     var pictures: Array<InPicture>
 ) {
 
@@ -41,8 +37,8 @@ data class InPlace(
 
         other as InPlace
 
-        if (lat != other.lat) return false
-        if (lon != other.lon) return false
+        if (latitude != other.latitude) return false
+        if (longitude != other.longitude) return false
         if (title != other.title) return false
         if (description != other.description) return false
         if (!pictures.contentEquals(other.pictures)) return false
@@ -51,8 +47,8 @@ data class InPlace(
     }
 
     override fun hashCode(): Int {
-        var result = lat.hashCode()
-        result = 31 * result + lon.hashCode()
+        var result = latitude.hashCode()
+        result = 31 * result + longitude.hashCode()
         result = 31 * result + title.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + pictures.contentHashCode()
@@ -65,8 +61,8 @@ data class OutPlace(
     var id: Int,
     var title: String,
     var description: String,
-    var lat: Float,
-    var lon: Float,
+    var latitude: Float,
+    var longitude: Float,
     var pictures: Array<OutPicture>
 ) {
 
@@ -77,8 +73,8 @@ data class OutPlace(
         other as OutPlace
 
         if (id != other.id) return false
-        if (lat != other.lat) return false
-        if (lon != other.lon) return false
+        if (latitude != other.latitude) return false
+        if (longitude != other.longitude) return false
         if (title != other.title) return false
         if (description != other.description) return false
         if (!pictures.contentEquals(other.pictures)) return false
@@ -88,8 +84,8 @@ data class OutPlace(
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + lat.hashCode()
-        result = 31 * result + lon.hashCode()
+        result = 31 * result + latitude.hashCode()
+        result = 31 * result + longitude.hashCode()
         result = 31 * result + title.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + pictures.contentHashCode()
@@ -97,14 +93,15 @@ data class OutPlace(
     }
 }
 
-fun Place.toDTO(): OutPlace {
+fun Place.toDTO(fullPictureData: Boolean = false): OutPlace {
     return OutPlace(
         id.value,
         title,
         description,
-        lat,
-        lon
-        )
+        latitude,
+        longitude,
+        pictures.map { it.toDTO(fullPictureData) }.toTypedArray()
+    )
 }
 
 data class OutUser(

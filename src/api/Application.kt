@@ -11,11 +11,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
 import logic.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 
 fun main(args: Array<String>) {
@@ -33,26 +33,24 @@ fun Application.module() {
 
     routing {
 
-        get("/") {
+        get("/places") {
             authenticate { call, user ->
-                call.respondText("Hello ${user.name}", contentType = ContentType.Text.Plain)
+                call.respond(getPlaces().map { transaction { it.toDTO() } })
             }
         }
 
-        get("/places") {
-            call.respond()
-        }
-
         post("/places") {
-            val posted = call.receive<InPlace>()
-            call.respond(createPlace(posted).toDTO(arrayOf()))
+            authenticate { call, user ->
+                val posted = call.receive<InPlace>()
+                val place = transaction { createPlace(user, posted) }
+                call.respond(HttpStatusCode.Created, transaction { place.toDTO(false) })
+            }
         }
 
         get("/places/search/{term}") {
             val title = getParameter("term")
             val results = search(title!!)
-            val out =
-                results.map { OutPlace(it.id.value, it.title, it.description, it.lat, it.lon, arrayOf()) }
+            val out = results.map { transaction { it.toDTO(false) } }
             call.respond(out)
         }
 
@@ -69,11 +67,13 @@ fun Application.module() {
                     val token = sign(found)
                     val response = createAuthResponse(token, found)
                     call.respond(response)
+                    print(response)
                 } else {
                     val created = createUser(googleUser)
                     val token = sign(created)
                     val response = createAuthResponse(token, created)
                     call.respond(response)
+                    print(response)
                 }
             }
         }

@@ -6,6 +6,10 @@ import com.mkl.*
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
+fun getPlaces(): List<Place> {
+    return transaction { Place.all().toList() }
+}
+
 fun search(term: String): List<Place> {
     return transaction {
         Place.find { Places.title like "%$term%" }.toList()
@@ -21,6 +25,12 @@ fun createUser(googleUser: GoogleUser): User {
             locale = googleUser.locale
             picture = googleUser.picture
         }
+    }
+}
+
+fun getUser(id: Int): User? {
+    return transaction {
+        User.findById(id)
     }
 }
 
@@ -42,18 +52,22 @@ fun createPicture(inPicture: InPicture): Picture {
 
 fun createPlace(author: User, inPlace: InPlace): Place {
 
-    return transaction {
-
-        val createdPictures = inPlace.pictures.map { createPicture(it) }
+    var pictures = transaction { inPlace.pictures.map { createPicture(it) } }
+    var place = transaction {
         val created = Place.new {
             title = inPlace.title
             description = inPlace.description
-            lat = inPlace.lat
-            lon = inPlace.lon
-            pictures = SizedCollection(createdPictures)
+            latitude = inPlace.latitude
+            longitude = inPlace.longitude
             user = author
         }
 
         created
     }
+
+    transaction {
+        place.pictures = SizedCollection(pictures)
+    }
+
+    return place
 }

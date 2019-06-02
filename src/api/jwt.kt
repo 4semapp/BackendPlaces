@@ -1,12 +1,11 @@
 package com.mkl.api
 
-import api.OutUser
 import com.google.api.client.util.Base64
 import com.mkl.User
-import com.mkl.Users
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import org.jetbrains.exposed.dao.EntityID
+import logic.getUser
+import org.jetbrains.exposed.sql.transactions.experimental.transaction
 import java.io.File
 import java.security.Key
 import java.security.SecureRandom
@@ -53,25 +52,22 @@ fun sign(user: User): String {
         .compact()
 }
 
-fun verify(token: String): User {
+suspend fun verify(token: String): User? {
 
-    try {
+    return try {
         val claims = Jwts.parser()
-            .setSigningKey(secret)
+            .setSigningKey(getSecret())
             .parseClaimsJws(token)
             .body
 
-        val user = User(EntityID(claims.get("id", Int::class.java), Users))
-        user.email = claims["email"] as String
-        user.googleId = claims["googleId"] as String
-        user.name = claims["name"] as String
-        user.locale = claims["locale"] as String
-        user.picture = claims["picture"] as String
-
-        return user
+        val id = claims.get("id", Integer::class.java).toInt()
+        transaction {
+            getUser(id)
+        }
 
     } catch (e: Exception) {
-        throw JwtException(e.message!!)
+        e.printStackTrace()
+        null
     }
 }
 

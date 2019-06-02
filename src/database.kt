@@ -30,8 +30,8 @@ object PlacesPicturesReference : Table() {
 object Places : IntIdTable() {
     val title = varchar("title", 255)
     val description = text("description")
-    val lat = float("latitude")
-    val lon = float("longitude")
+    val latitude = float("latitude")
+    val longitude = float("longitude")
     val user = reference("user", Users)
 }
 
@@ -40,10 +40,10 @@ class Place(id: EntityID<Int>) : IntEntity(id) {
 
     var title by Places.title
     var description by Places.description
-    var lat by Places.lat
-    var lon by Places.lon
+    var latitude by Places.latitude
+    var longitude by Places.longitude
     var user by User referencedOn Places.user
-    var pictures by Picture via Pictures
+    var pictures by Picture via PlacesPicturesReference
 }
 
 object Users : IntIdTable() {
@@ -78,5 +78,6 @@ fun main() {
         SchemaUtils.create(Places)
         SchemaUtils.create(Pictures)
         SchemaUtils.create(Users)
+        SchemaUtils.create(PlacesPicturesReference)
     }
 }
