@@ -63,7 +63,8 @@ data class OutPlace(
     var description: String,
     var latitude: Float,
     var longitude: Float,
-    var pictures: Array<OutPicture>
+    var pictures: Array<OutPicture>,
+    var user: OutUser
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -100,26 +101,21 @@ fun Place.toDTO(): OutPlace {
         description,
         latitude,
         longitude,
-        pictures.map { it.toDTO() }.toTypedArray()
+        pictures.map { it.toDTO() }.toTypedArray(),
+        user.toDTO()
     )
 }
 
 data class OutUser(
     var id: Int,
-    var googleId: String,
     var name: String,
-    var email: String,
-    var picture: String,
-    var locale: String
+    var picture: String
 )
 
 fun User.toDTO(): OutUser {
     return OutUser(
         this.id.value,
-        this.googleId,
         this.name,
-        this.email,
-        this.picture,
-        this.locale
+        this.picture
     )
 }
