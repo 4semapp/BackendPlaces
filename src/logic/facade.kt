@@ -5,6 +5,7 @@ import api.InPlace
 import com.mkl.*
 import com.sun.org.apache.xml.internal.security.utils.Base64
 import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -14,8 +15,7 @@ fun getPlaces(): List<Place> {
 }
 
 fun countPosts(user: User): Int {
-    // not an optimal solution, cannot use Places.select {Place.user eq user}
-    return transaction { Places.selectAll().filter { Place.wrapRow(it).user.id == user.id }.count() }
+    return transaction { Places.select { Places.user eq user.id }.count() }
 }
 
 fun getHomePage(): List<Place> {
