@@ -45,6 +45,12 @@ fun Application.module() {
             }
         }
 
+        get("/places/count") {
+            authenticate {call, user ->
+                call.respond(countPosts(user)) 
+            }
+        }
+
         get("/home") {
             authenticate { call, _ ->
                 call.respond(getHomePage().map { transaction { it.toDTO() } })

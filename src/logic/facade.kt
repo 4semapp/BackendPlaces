@@ -13,6 +13,11 @@ fun getPlaces(): List<Place> {
     return transaction { Place.all().toList() }
 }
 
+fun countPosts(user: User): Int {
+    // not an optimal solution, cannot use Places.select {Place.user eq user}
+    return transaction { Places.selectAll().filter { Place.wrapRow(it).user.id == user.id }.count() }
+}
+
 fun getHomePage(): List<Place> {
     return transaction { Places.selectAll().limit(3).map { Place.wrapRow(it) } }
 }
@@ -54,8 +59,8 @@ private const val imageDir = "images"
 
 fun createPicture(inPicture: InPicture): Picture {
     val picture = Picture.new {
-        fullName=""
-        thumbName=""
+        fullName = ""
+        thumbName = ""
     }
     val fullName = "${picture.id}_full.jpg"
     val thumbName = "${picture.id}_thumb.jpg"
