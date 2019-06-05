@@ -1,3 +1,6 @@
+images/
+places.sqlite
+
 /.gradle
 /.idea
 /out

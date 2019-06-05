@@ -138,7 +138,7 @@ fun filter(place: GooglePlace): Boolean {
 fun deleteDatabase() {
     File("places.sqlite").delete()
     File(imageDir).deleteRecursively()
-    File(imageDir, "._").mkdirs()
+    File(imageDir, ".").mkdirs()
 }
 
 fun createDatabase() {
