@@ -5,6 +5,7 @@ import api.InPlace
 import com.mkl.*
 import com.sun.org.apache.xml.internal.security.utils.Base64
 import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -19,7 +20,12 @@ fun countPosts(user: User): Int {
 }
 
 fun getHomePage(): List<Place> {
-    return transaction { Places.selectAll().limit(3).map { Place.wrapRow(it) } }
+    return transaction {
+        Places.selectAll()
+            .orderBy(Places.id to SortOrder.DESC)
+            .limit(3)
+            .map { Place.wrapRow(it) }
+    }
 }
 
 fun search(term: String): List<Place> {
