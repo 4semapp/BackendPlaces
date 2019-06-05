@@ -74,7 +74,7 @@ fun connect(): Database {
 fun main() {
     connect()
     transaction {
-        addLogger(StdOutSqlLogger)
+        // addLogger(StdOutSqlLogger)
         SchemaUtils.create(Places)
         SchemaUtils.create(Pictures)
         SchemaUtils.create(Users)
